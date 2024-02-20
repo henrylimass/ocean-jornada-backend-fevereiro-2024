@@ -1,0 +1,11 @@
+{
+  "name": "ocean-jornada-backend-fevereiro-2024",
+  "version": "1.0.0",
+  "description": "Projeto com nodeJS e Express",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Henry araujo",
+  "license": "MIT"
+}
