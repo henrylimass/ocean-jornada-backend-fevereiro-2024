@@ -1,7 +1,7 @@
 const express = require('express')
-const { MongoClient } = require('mongodb')
+const { MongoClient, ObjectId } = require('mongodb')
 
-const dbUrl = 'mongodb+srv://admin:l5F3RnLAfemCHpIa@cluster0.hvxo0io.mongodb.net'
+const dbUrl = 'mongodb+srv://admin:JHy9QG6y9kLJItWK@cluster0.hvxo0io.mongodb.net'
 const dbName = 'OceanJornadaBackendFev2024'
 
 async function main() {
@@ -42,13 +42,10 @@ async function main() {
     // Acesso o ID no parâmetro de rota
     const id = req.params.id
 
-  //Acesso o item na collection baseado no ID recebido
-  const item = await collection.findOne({
-    _id: new Object(id)
-  })
-
-    // Acesso item na lista baseado no ID recebido
-    const item = lista[id]
+    // Acesso o item na collection baseado no ID recebido
+    const item = await collection.findOne({
+      _id: new ObjectId(id)
+    })
 
     // Envio o item obtido como resposta HTTP
     res.send(item)
@@ -58,19 +55,35 @@ async function main() {
   app.use(express.json())
 
   // Create -> [POST] /item
-  app.post('/item', function (req, res) {
+  app.post('/item', async function (req, res) {
     // Extraímos o corpo da requisição
-    const body = req.body
+    const item = req.body
 
-    // Pegamos o nome (string) que foi enviado dentro do corpo
-    const item = body.nome
-
-    // Colocamos o nome dentro da lista de itens
-    lista.push(item)
+    // Colocamos o item dentro da collection de itens
+    await collection.insertOne(item)
 
     // Enviamos uma resposta de sucesso
-    res.send('Item adicionado com sucesso!')
+    res.send(item)
   })
+
+    // Update -> [PUT] /item/:id
+    app.put('/item/:id', async function (req, res) {
+      // Pegamos o ID recebido pela rota
+      const id = req.params.id
+  
+      // Pegamos o novo item do corpo da requisição
+      const novoItem = req.body
+  
+      // Atualizamos o documento na collection
+      await collection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: novoItem }
+      )
+  
+      // Enviamos uma mensagem de sucesso
+      res.send('Item atualizado com sucesso!')
+    })
+  
 
   app.listen(3000)
 }
